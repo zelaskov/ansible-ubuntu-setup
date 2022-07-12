@@ -29,6 +29,9 @@
           - hydra
           - sqlmap
           - openvpn
+          - smbclient
+          - hashid
+          - fcrackzip
         state: latest
         update_cache: true
     - name: add docker GPG apt key
@@ -47,4 +50,7 @@
     - name: "change docker socket permissions"
       command: bash -c "chmod 666 /var/run/docker.sock"              
     - name: "install gobuster"
-      command: bash -c "go install github.com/OJ/gobuster/v3@latest"        
+      command: bash -c "go install github.com/OJ/gobuster/v3@latest"
+      ## install tfenv only for root user
+    - name: "install tfenv"
+      command: bash -c "git clone https://github.com/tfutils/tfenv.git ~/.tfenv && echo 'export PATH=$PATH:$HOME/.tfenv/bin' >> ~/.bashrc"        
