@@ -4,13 +4,13 @@
   become_method: sudo
  
   tasks:
-    - name: "update packages and upgrade"
+    - name: Update packages and upgrade
       apt:
         update_cache: true
         upgrade: dist
         force_apt_get: true
 
-    - name: install required system packages
+    - name: Install required system packages
       apt:
         pkg:
           - apt-transport-https
@@ -36,32 +36,32 @@
           - wget
         state: latest
         update_cache: true
-    - name: add docker GPG apt key
+    - name: Add docker GPG apt key
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
-    - name: add docker repository
+    - name: Add docker repository
       apt_repository:
         repo: deb https://download.docker.com/linux/ubuntu focal stable
         state: present
-    - name: update apt and install docker-ce
+    - name: Update apt and install docker-ce
       apt:
         name: docker-ce
         state: latest
         update_cache: true
-    - name: "change docker socket permissions"
+    - name: Change docker socket permissions
       command: bash -c "chmod 666 /var/run/docker.sock"              
-    - name: "install gobuster"
+    - name: Install gobuster
       command: bash -c "go install github.com/OJ/gobuster/v3@latest"
       ## install tfenv only for root user
-    - name: check if tfenv dir exists
+    - name: Check if tfenv dir exists
       stat:
         path: "/root/.tfenv"
       register: tfenv_dir
     - name: Report .tfenv dir exists
       debug:
         msg: ".tfenv dir exists, ommiting installation"
-    - name: "install tfenv"
+    - name: "Install tfenv"
       command: bash -c "git clone https://github.com/tfutils/tfenv.git ~/.tfenv && echo 'export PATH=$PATH:$HOME/.tfenv/bin' >> ~/.bashrc"
       when: not tfenv_dir.stat.exists
     - name: Add Google official GPG key
