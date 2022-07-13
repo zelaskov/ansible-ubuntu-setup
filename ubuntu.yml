@@ -32,6 +32,8 @@
           - smbclient
           - hashid
           - fcrackzip
+          - gpg
+          - wget
         state: latest
         update_cache: true
     - name: add docker GPG apt key
@@ -52,5 +54,30 @@
     - name: "install gobuster"
       command: bash -c "go install github.com/OJ/gobuster/v3@latest"
       ## install tfenv only for root user
+    - name: check if tfenv dir exists
+      stat:
+        path: "/root/.tfenv"
+      register: tfenv_dir
+    - name: Report .tfenv dir exists
+      debug:
+        msg: ".tfenv dir exists, ommiting installation"
     - name: "install tfenv"
-      command: bash -c "git clone https://github.com/tfutils/tfenv.git ~/.tfenv && echo 'export PATH=$PATH:$HOME/.tfenv/bin' >> ~/.bashrc"        
+      command: bash -c "git clone https://github.com/tfutils/tfenv.git ~/.tfenv && echo 'export PATH=$PATH:$HOME/.tfenv/bin' >> ~/.bashrc"
+      when: not tfenv_dir.stat.exists
+    - name: Add Google official GPG key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present      
+    - name: Add Kubernetes Repository
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main 
+        state: present
+        filename: kubernetes
+        mode: 0600        
+    - name: Installing Kubernetes Cluster Packages.
+      apt: 
+        name:
+          - kubeadm
+          - kubectl
+          - kubelet
+        state: present
